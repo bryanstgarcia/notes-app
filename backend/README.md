@@ -1,0 +1,67 @@
+# Backend
+
+REST API built with Django and JWT authentication.
+
+## Stack
+
+- Python 3.12
+- Django 5
+- Django REST Framework
+- djangorestframework-simplejwt
+
+## Running locally
+
+### With Docker (recommended)
+
+From the repository root:
+
+```bash
+cp .env.example .env
+make build
+make migrate
+make dev
+```
+
+The API will be available at `http://localhost:8000/api/`.
+
+### Without Docker
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp ../.env.example ../.env
+python manage.py migrate
+python manage.py runserver 0.0.0.0:8000
+```
+
+## Environment variables
+
+| Variable | Description | Default |
+|---|---|---|
+| `DJANGO_SECRET_KEY` | Django secret key | `change-me-before-use` |
+| `DJANGO_DEBUG` | Enable debug mode | `True` |
+| `DJANGO_ALLOWED_HOSTS` | Comma-separated list of allowed hosts | `localhost,127.0.0.1,backend` |
+| `DB_PATH` | Path to the SQLite database file | `backend/db/db.sqlite3` |
+
+## Available endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/register/` | Register a new user |
+| `POST` | `/api/auth/login/` | Obtain access + refresh JWT tokens |
+| `POST` | `/api/auth/refresh/` | Refresh an access token |
+| `GET` | `/api/auth/me/` | Retrieve the authenticated user |
+
+## Generating the OpenAPI schema
+
+From the repository root:
+
+```bash
+make generate-schema
+```
+
+This runs `python manage.py spectacular --file openapi.json` inside the container and copies the result to `frontend/openapi.json`, which the frontend uses to generate its typed API client.
+
+Explore the API interactively at `http://localhost:8000/api/docs/`.
