@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --cream: #FAF1E3;
+  --brown: #88642A;
+  --brown-light: rgb(149 113 57 / 0.2); /* brown (#957139) at 20% opacity */
+  --black: #000000;
+  --blue: #78ABA8;
+  --green: #C8CFA0;
+  --orange: #EF9C66;
+  --yellow: #FCDC94;
+
+  --background: var(--cream);
+  --foreground: var(--brown);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-cream: var(--cream);
+  --color-brown: var(--brown);
+  --color-brown-light: var(--brown-light);
+  --color-black: var(--black);
+  --color-blue: var(--blue);
+  --color-green: var(--green);
+  --color-orange: var(--orange);
+  --color-yellow: var(--yellow);
+
+  --font-title: var(--font-inria-serif);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
