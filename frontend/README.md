@@ -52,14 +52,23 @@ to regenerate the client into `src/lib/api/`. This should be re-run every time t
 ```
 src/
 ├── app/
-│   ├── (auth)/           # login and register routes (layout without navbar)
+│   ├── (auth)/                 # login and register routes (layout without navbar)
 │   │   ├── login/
 │   │   └── register/
-│   └── (protected)/      # routes that require an active session
-│       └── dashboard/
+│   └── (protected)/            # routes that require an active session
+│       ├── dashboard/          # notes dashboard with category sidebar
+│       └── note/[id]/          # note detail / inline-edit view
+├── features/
+│   ├── auth/                   # login, sign-up, session context (AuthProvider/useAuth), token storage
+│   ├── dashboard/               # notes list, category sidebar, create-note flow
+│   └── notes/                   # note detail view, editable fields, autosave hook
 ├── components/
-│   └── ui/               # base components (buttons, inputs, etc.)
+│   └── ui/                     # shared primitives: Button, Input, TextLink, CloseButton, ColorDropdown/, NoteCard/
 ├── lib/
-│   └── api/              # auto-generated API client, do not edit
-└── types/                # additional TypeScript types
+│   └── api/                    # auto-generated API client, do not edit
+├── utils/                      # shared constants and formatting helpers (not auto-generated)
+├── assets/                     # onboarding/empty-state illustrations
+└── types/                      # additional TypeScript types (currently empty; domain types come from lib/api/models)
 ```
+
+Feature modules follow a `hooks/` (state/logic) + `components/` (presentational) split, composed by a top-level container component (e.g. `LoginView`, `NotesDashboardView`, `NoteDetailView`).

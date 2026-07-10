@@ -1,6 +1,6 @@
 # Backend
 
-REST API built with Django and JWT authentication.
+REST API built with Django and JWT authentication. Two apps: `users` (registration/auth) and `notes` (categorized notes CRUD, scoped to their owner).
 
 ## Stack
 
@@ -47,12 +47,16 @@ python manage.py runserver 0.0.0.0:8000
 
 ## Available endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/auth/register/` | Register a new user |
-| `POST` | `/api/auth/login/` | Obtain access + refresh JWT tokens |
-| `POST` | `/api/auth/refresh/` | Refresh an access token |
-| `GET` | `/api/auth/me/` | Retrieve the authenticated user |
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register/` | AllowAny | Register a new user by email + password (username is server-generated) |
+| `POST` | `/api/auth/login/` | AllowAny | Obtain access + refresh JWT tokens, logging in by email |
+| `POST` | `/api/auth/refresh/` | AllowAny | Refresh an access token |
+| `GET` | `/api/auth/me/` | IsAuthenticated | Retrieve the authenticated user |
+| `GET` | `/api/notes/` | IsAuthenticated | List the current user's notes, newest first |
+| `POST` | `/api/notes/` | IsAuthenticated | Create a note owned by the current user |
+| `GET` | `/api/notes/<id>/` | IsAuthenticated | Retrieve a single note (404 if not owned) |
+| `PATCH` | `/api/notes/<id>/` | IsAuthenticated | Partially update a note (404 if not owned); `PUT`/`DELETE` return 405 |
 
 ## Generating the OpenAPI schema
 

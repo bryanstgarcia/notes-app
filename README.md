@@ -1,6 +1,6 @@
 # My App
 
-Full-stack web application with a Django REST API backend and a Next.js frontend.
+A notes app with a Django REST API backend and a Next.js frontend. Users register/log in via JWT and manage categorized notes (create, list by category, and edit with autosave).
 
 ## Stack
 
@@ -56,13 +56,15 @@ make dev
 
 ```
 my-app/
-├── backend/       # Django REST API
+├── backend/       # Django REST API (apps: users, notes)
 ├── frontend/      # Next.js App Router web client
 ├── docker-compose.yml   # full local orchestration
 ├── .env.example   # documented environment variables
 ├── Makefile       # unified commands
 └── CLAUDE.md      # project context for Claude Code
 ```
+
+See `backend/README.md` and `frontend/README.md` for details specific to each project.
 
 ## OpenAPI schema workflow
 
