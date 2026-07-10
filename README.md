@@ -1,4 +1,4 @@
-# My App
+# Notes taking app
 
 A notes app with a Django REST API backend and a Next.js frontend. Users register/log in via JWT and manage categorized notes (create, list by category, and edit with autosave).
 
