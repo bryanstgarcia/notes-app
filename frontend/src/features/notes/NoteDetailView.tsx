@@ -42,13 +42,11 @@ export function NoteDetailView({ noteId }: NoteDetailViewProps) {
     flushPendingSave,
   } = useNoteDetail(noteId);
 
-  // Flush pending saves when close button is clicked
   const handleClose = async () => {
     await flushPendingSave();
     router.push(AUTH_ROUTES.DASHBOARD);
   };
 
-  // Show loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-dvh bg-background">
@@ -57,7 +55,6 @@ export function NoteDetailView({ noteId }: NoteDetailViewProps) {
     );
   }
 
-  // Show not found state
   if (isNotFound) {
     return (
       <div className="flex flex-col items-center justify-center h-dvh bg-background gap-4">
@@ -69,7 +66,6 @@ export function NoteDetailView({ noteId }: NoteDetailViewProps) {
     );
   }
 
-  // Show load error state
   if (loadError) {
     return (
       <div className="flex flex-col items-center justify-center h-dvh bg-background gap-4">
@@ -90,7 +86,6 @@ export function NoteDetailView({ noteId }: NoteDetailViewProps) {
 
   return (
     <div className="flex flex-col bg-background min-h-dvh p-10">
-      {/* Top bar with category dropdown and close button */}
       <div className="flex justify-between items-center gap-4 mb-6">
         <div className="w-64">
           <ColorDropdown
@@ -121,7 +116,6 @@ export function NoteDetailView({ noteId }: NoteDetailViewProps) {
           className="mb-2"
         />
 
-        {/* Content */}
         <EditableField
           variant="content"
           value={content}
@@ -132,7 +126,6 @@ export function NoteDetailView({ noteId }: NoteDetailViewProps) {
         />
       </div>
 
-      {/* Error messages */}
       {saveError && (
         <div
           role="alert"

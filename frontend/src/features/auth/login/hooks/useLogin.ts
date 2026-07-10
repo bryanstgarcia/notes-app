@@ -53,7 +53,6 @@ export function useLogin(): UseLoginReturn {
 
   const handleChange = (field: "email" | "password", value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }));
-    // Clear the field's error immediately
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
@@ -62,10 +61,8 @@ export function useLogin(): UseLoginReturn {
 
     if (isSubmitting) return;
 
-    // Reset form error
     setFormError(undefined);
 
-    // Client-side validation
     const newErrors: LoginErrors = {};
 
     if (!values.email || !isValidEmail(values.email)) {
@@ -93,13 +90,11 @@ export function useLogin(): UseLoginReturn {
         password: values.password,
       } as TokenObtainPair);
 
-      // Login was successful; call the auth context's login function
       await login({
         access: response.access,
         refresh: response.refresh,
       });
 
-      // Redirect to dashboard
       router.replace(AUTH_ROUTES.DASHBOARD);
 
       setIsSubmitting(false);

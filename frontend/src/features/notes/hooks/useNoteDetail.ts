@@ -66,10 +66,8 @@ export function useNoteDetail(noteId: number): UseNoteDetailReturn {
   // earlier response can't clobber a faster later selection's state.
   const categoryRequestIdRef = useRef(0);
 
-  // Debounced content save timer
   const contentSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch note on mount
   useEffect(() => {
     const fetchNote = async () => {
       try {
@@ -174,20 +172,17 @@ export function useNoteDetail(noteId: number): UseNoteDetailReturn {
     }
   };
 
-  // Flush any pending debounced save (called on close button click)
   const flushPendingSave = async () => {
     if (contentSaveTimerRef.current) {
       clearTimeout(contentSaveTimerRef.current);
       contentSaveTimerRef.current = null;
 
-      // Save if content changed
       if (content !== lastSavedRef.current.content) {
         await saveFields({ content });
       }
     }
   };
 
-  // Clean up debounce timer on unmount
   useEffect(() => {
     return () => {
       if (contentSaveTimerRef.current) {
@@ -210,7 +205,6 @@ export function useNoteDetail(noteId: number): UseNoteDetailReturn {
     const newValue = e.target.value;
     setContent(newValue);
 
-    // Clear existing debounce timer
     if (contentSaveTimerRef.current) {
       clearTimeout(contentSaveTimerRef.current);
     }
@@ -227,13 +221,11 @@ export function useNoteDetail(noteId: number): UseNoteDetailReturn {
   };
 
   const handleContentBlur = () => {
-    // Clear the debounce timer if it exists
     if (contentSaveTimerRef.current) {
       clearTimeout(contentSaveTimerRef.current);
       contentSaveTimerRef.current = null;
     }
 
-    // Save immediately on blur
     if (content !== lastSavedRef.current.content) {
       saveFields({ content });
     }

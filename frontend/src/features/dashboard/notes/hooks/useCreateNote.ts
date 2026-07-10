@@ -25,7 +25,6 @@ export function useCreateNote(): UseCreateNoteReturn {
   const { logout } = useAuth();
 
   const handleCreate = async () => {
-    // Re-entrancy guard
     if (isCreating) return;
 
     setError(undefined);

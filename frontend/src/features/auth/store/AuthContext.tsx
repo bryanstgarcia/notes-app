@@ -30,10 +30,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // On mount, check if there are stored tokens and hydrate the user.
     const storedTokens = getStoredTokens();
 
-    // No stored tokens; clear loading state and continue.
     if (!storedTokens) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(false);
@@ -43,7 +41,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set the token in the OpenAPI config so subsequent requests include it
     OpenAPI.TOKEN = storedTokens.access;
 
-    // Fetch the current user
     AuthService.authMeRetrieve()
       .then((me) => {
         setUser(me);
@@ -59,13 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (tokens: { access: string; refresh: string }) => {
-    // Store tokens in localStorage
     setStoredTokens(tokens);
-
-    // Set the token in the OpenAPI config
     OpenAPI.TOKEN = tokens.access;
 
-    // Fetch the current user
     const me = await AuthService.authMeRetrieve();
     setUser(me);
   };

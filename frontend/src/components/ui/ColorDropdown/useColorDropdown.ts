@@ -37,7 +37,6 @@ export function useColorDropdown(
   const panelRef = React.useRef<HTMLUListElement | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
 
-  // Merge forwardedRef with triggerRef
   React.useImperativeHandle(
     forwardedRef,
     () => triggerRef.current as HTMLButtonElement
@@ -56,7 +55,6 @@ export function useColorDropdown(
     triggerRef.current?.focus();
   };
 
-  // Handle trigger click (mouse): toggles the panel open/closed
   const handleTriggerClick = () => {
     setOpen((prev) => {
       const next = !prev;
@@ -68,7 +66,6 @@ export function useColorDropdown(
     });
   };
 
-  // Handle trigger keydown (closed state: Enter, Space, ArrowDown to open)
   const handleTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (disabled) return;
 
@@ -77,10 +74,8 @@ export function useColorDropdown(
     if (key === "Enter" || key === " ") {
       e.preventDefault();
       setOpen(true);
-      // Set activeIndex to the selected option's index, or 0
       const selectedIndex = options.findIndex((opt) => opt.id === currentValue);
       setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
-      // Focus the panel after it mounts
       setTimeout(() => panelRef.current?.focus(), 0);
     } else if (key === "ArrowDown") {
       e.preventDefault();
@@ -91,7 +86,6 @@ export function useColorDropdown(
     }
   };
 
-  // Handle panel keydown (open state: Arrow keys, Enter, Space, Escape)
   const handlePanelKeyDown = (e: React.KeyboardEvent<HTMLUListElement>) => {
     const key = e.key;
 
@@ -117,7 +111,6 @@ export function useColorDropdown(
     }
   };
 
-  // Outside-click listener
   React.useEffect(() => {
     if (!open) return;
 
@@ -136,7 +129,6 @@ export function useColorDropdown(
     };
   }, [open]);
 
-  // Handle blur/Tab-away closing
   const handleWrapperBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     if (
       wrapperRef.current &&
@@ -147,7 +139,6 @@ export function useColorDropdown(
     }
   };
 
-  // Re-clamp activeIndex if options changes while open
   React.useEffect(() => {
     if (!open) return;
 
@@ -162,7 +153,6 @@ export function useColorDropdown(
     }
   }, [options, open, currentValue]);
 
-  // Focus panel when it mounts
   React.useEffect(() => {
     if (open) {
       panelRef.current?.focus();

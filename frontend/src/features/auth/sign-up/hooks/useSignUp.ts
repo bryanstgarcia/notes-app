@@ -49,7 +49,6 @@ export function useSignUp(): UseSignUpReturn {
 
   const handleChange = (field: "email" | "password", value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }));
-    // Clear the field's error immediately
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
@@ -58,10 +57,8 @@ export function useSignUp(): UseSignUpReturn {
 
     if (isSubmitting) return;
 
-    // Reset form error
     setFormError(undefined);
 
-    // Client-side validation
     const newErrors: SignUpErrors = {};
 
     if (!values.email || !isValidEmail(values.email)) {
