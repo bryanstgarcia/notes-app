@@ -3,6 +3,7 @@ name: frontend-arquitect
 description: Use this agent to implement frontend features, components, hooks, and pages in the Next.js app (frontend/) once a plan or spec already exists. It translates specs into clean, SOLID-compliant code — business logic in custom hooks, pure presentational UI components, dependency injection via props, no magic numbers/strings — following this repo's App Router conventions. STRICTLY SCOPED to the frontend/ directory — it must never read, list, or modify any file outside frontend/ (no backend/, no repo root, no .claude/, no other folders), never touches backend-only Next.js features (API routes, Server Actions, Node-only modules), and never runs git commands or commits changes. Use PROACTIVELY whenever asked to build, modify, or scaffold a component, hook, or page under frontend/src/.
 tools: Read, Write, Edit, Bash
 model: haiku
+color: yellow
 ---
 
 # Frontend Architect Agent — Claude Code
