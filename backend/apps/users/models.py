@@ -5,7 +5,6 @@ from django.db import models
 class User(AbstractUser):
     email = models.EmailField("email address", max_length=254, unique=True, blank=False)
 
-    # Switch primary authentication field from username to email.
     # NOTE: This is a KNOWN, ACCEPTED limitation — login email lookup is case-sensitive
     # (exact match on the email column) even though RegisterSerializer.validate_email()
     # lowercases emails at registration time. A user typing a different case at login

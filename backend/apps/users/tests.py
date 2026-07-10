@@ -47,7 +47,6 @@ class UsernameGenerationTests(TestCase):
 
     def test_generate_unique_username_adds_numeric_suffix(self):
         """Test that numeric suffix is added when base is taken."""
-        # Pre-create a user with the base username
         User.objects.create_user(username="jane", email="jane@example.com", password="password123")
 
         username = services.generate_unique_username("jane")
@@ -55,7 +54,6 @@ class UsernameGenerationTests(TestCase):
 
     def test_generate_unique_username_increments_numeric_suffix(self):
         """Test that numeric suffix increments correctly."""
-        # Pre-create users with sequential usernames
         User.objects.create_user(username="jane", email="jane1@example.com", password="password123")
         User.objects.create_user(username="jane2", email="jane2@example.com", password="password123")
         User.objects.create_user(username="jane3", email="jane3@example.com", password="password123")
@@ -121,7 +119,6 @@ class RegistrationAPITests(TestCase):
         self.assertIn("username", response.data)
         self.assertIn("email", response.data)
         self.assertEqual(response.data["email"], "newuser@example.com")
-        # Username should be auto-generated and not present in the request
         self.assertIsNotNone(response.data["username"])
         self.assertEqual(response.data["username"], "newuser")
 
@@ -138,7 +135,6 @@ class RegistrationAPITests(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        # Response username should be server-generated, not the submitted one
         self.assertEqual(response.data["username"], "alice")
         self.assertNotEqual(response.data["username"], "submitted-username")
 
@@ -193,7 +189,6 @@ class RegistrationAPITests(TestCase):
             format="json"
         )
 
-        # 8 chars should pass min_length=8
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         response = self.client.post(
@@ -262,7 +257,6 @@ class RegistrationAPITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["email"], "newuser@example.com")
 
-        # Verify in database as well
         user = User.objects.get(id=response.data["id"])
         self.assertEqual(user.email, "newuser@example.com")
 
@@ -305,13 +299,11 @@ class EmailLoginAPITests(TestCase):
 
     def test_login_with_email_and_password_succeeds(self):
         """Test successful login with email and password."""
-        # Create a user via services
         services.create_user_with_generated_username(
             email="alice@example.com",
             password="securepassword123"
         )
 
-        # Login with email
         response = self.client.post(
             self.login_url,
             {
@@ -358,13 +350,11 @@ class EmailLoginAPITests(TestCase):
 
     def test_login_rejects_legacy_username_payload(self):
         """Test that old username-based payload now fails (regression test)."""
-        # Create a user
         services.create_user_with_generated_username(
             email="alice@example.com",
             password="securepassword123"
         )
 
-        # Try to login with username (old payload format) — should fail
         response = self.client.post(
             self.login_url,
             {

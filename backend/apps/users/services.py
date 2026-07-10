@@ -28,9 +28,6 @@ def derive_username_from_email(email: str) -> str:
     """
     local_part = email.split("@")[0]
 
-    # Keep only allowed characters: letters, digits, @/./+/-/_
-    # The UnicodeUsernameValidator regex pattern allows these characters plus unicode letters/numbers
-    # For simplicity, we keep ASCII letters, digits, and the special chars
     sanitized = re.sub(r"[^a-zA-Z0-9@.+\-_]", "", local_part).lower()
 
     if not sanitized:
@@ -57,23 +54,19 @@ def generate_unique_username(base_username: str) -> str:
     Truncates the base so the final username never exceeds USERNAME_MAX_LENGTH,
     reserving USERNAME_SUFFIX_RESERVED_LENGTH characters for the suffix.
     """
-    # Reserve space for the suffix (e.g., "_randomsuffix" or "9999")
     max_base_length = USERNAME_MAX_LENGTH - USERNAME_SUFFIX_RESERVED_LENGTH
     truncated_base = base_username[:max_base_length]
 
-    # Try the base as-is first
     if not _username_exists(truncated_base):
         return truncated_base
 
-    # Try sequential suffixes
     for attempt in range(2, USERNAME_GENERATION_MAX_SEQUENTIAL_ATTEMPTS + 1):
         candidate = f"{truncated_base}{attempt}"
         if len(candidate) > USERNAME_MAX_LENGTH:
-            break  # No point continuing if we exceed max length
+            break
         if not _username_exists(candidate):
             return candidate
 
-    # Try random suffixes
     for _ in range(USERNAME_GENERATION_MAX_RANDOM_ATTEMPTS):
         random_suffix = secrets.token_hex(USERNAME_GENERATION_RANDOM_SUFFIX_LENGTH // 2)
         candidate = f"{truncated_base}_{random_suffix}"
@@ -82,7 +75,6 @@ def generate_unique_username(base_username: str) -> str:
         if not _username_exists(candidate):
             return candidate
 
-    # If we get here, we've exhausted all attempts (extremely unlikely)
     raise RuntimeError("Could not generate a unique username after all retry attempts.")
 
 
@@ -120,7 +112,5 @@ def create_user_with_generated_username(email: str, password: str) -> User:
             return user
         except IntegrityError:
             if attempt == CREATE_USER_MAX_INTEGRITY_RETRIES - 1:
-                # Last attempt failed, re-raise the error
                 raise
-            # Otherwise, retry with a freshly-generated username
             continue

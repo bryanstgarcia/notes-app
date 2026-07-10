@@ -415,7 +415,6 @@ class NoteListAPITests(TestCase):
         """Test list endpoint returns notes ordered by -created_at (most recent first)."""
         import time
 
-        # Create notes with small delay to ensure different timestamps
         note1 = Note.objects.create(
             owner=self.user,
             title="First Note",
@@ -439,7 +438,6 @@ class NoteListAPITests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
-        # Most recent notes should appear first
         self.assertEqual(response.data[0]["id"], note3.id)
         self.assertEqual(response.data[1]["id"], note2.id)
         self.assertEqual(response.data[2]["id"], note1.id)
