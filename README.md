@@ -76,3 +76,37 @@ Whenever the backend API changes:
 2. Run `npm run generate-api` inside `frontend/` to regenerate the typed client in `frontend/src/lib/api/`.
 
 The generated client should never be edited by hand — any manual change will be overwritten on the next regeneration.
+
+## Development process
+
+The app was built incrementally with Claude Code, one feature per commit:
+
+1. **Plan first.** Before any code, a written plan (`plan/PLAN-EN.md`) laid out the monorepo layout, the Docker setup, Django settings, and the frontend scaffolding — the execution order Claude Code then followed.
+2. **Scaffold both sides.** Django project + Docker tooling, then the `users` app with JWT auth (`4fc6a4b`, `6ed9ace`), then the Next.js app (`b37ddaa`).
+3. **Contract before consumption.** The OpenAPI schema and generated frontend client (`bc5628a`) were produced *before* building any screen that calls the API, so every frontend feature was written against real, typed endpoints instead of guesses.
+4. **Shared primitives before features.** Base UI components (`Button`, `Input`, dropdowns, cards — `1d04a2b`) were built before the screens that assemble them.
+5. **Feature-by-feature.** Auth pages → notes CRUD API → notes dashboard → note detail with autosave, each as its own commit, each re-running the OpenAPI workflow after backend changes.
+6. **Docs and cleanup pass.** `CLAUDE.md`/`README.md` were kept in sync with the app's actual state (`efbb565`), and a final pass removed comments that only restated what the code already said (`390866c`, `bce2620`), keeping only comments that explain non-obvious *why* (e.g. the case-sensitive email lookup, the 404-not-403 ownership check).
+
+## Key design and technical decisions
+
+- **Monorepo, HTTP-only contract.** `backend/` and `frontend/` never import from each other; the OpenAPI schema generated from DRF is the single source of truth, versioned as `backend/openapi.json`/`frontend/openapi.json` and turned into a typed client via `openapi-typescript-codegen`. This keeps both sides independently deployable and makes API drift a type error instead of a runtime surprise.
+- **No reverse proxy in dev.** A Next.js rewrite forwards `/api/*` to the backend container; `django-cors-headers` covers the case where the frontend calls the API directly. One less moving part than an Nginx layer for local development.
+- **Email-based auth with server-generated usernames.** `AUTH_USER_MODEL` swaps `USERNAME_FIELD` to `email`; the client never chooses a username, it's derived from the email local-part in `services.py`. Reduces signup friction and a whole class of "username taken" edge cases.
+- **Ownership checks return 404, not 403.** Fetching another user's note 404s instead of 403ing, so the API never confirms that a given note ID exists for someone else.
+- **Thin views/serializers, logic in `services.py`.** Each Django app keeps business rules (ownership scoping, username generation) out of views and serializers, per the "what NOT to do" rules in `CLAUDE.md`. Magic numbers/strings live in `constants.py`.
+- **Feature-based frontend structure.** `frontend/src/features/<feature>/{hooks,components}` separates state/side-effects (hooks) from presentation (components); route-level containers (`LoginView`, `NotesDashboardView`, `NoteDetailView`) compose them. Shared primitives live separately in `src/components/ui/`.
+- **Debounced, granular autosave.** Note content saves 800ms after the user stops typing, the title saves on blur, and category changes save immediately — three different save strategies picked per field based on how often and how destructively each one changes.
+- **Strict TypeScript, no generated-code edits.** `strict: true` with no `any`, and the API client under `frontend/src/lib/api/` is treated as build output, never hand-edited — regenerated instead whenever the backend contract changes.
+
+## The AI tools used, and how
+
+The whole app was built with **Claude Code** (Sonnet), used in a few distinct modes rather than as a single undifferentiated "ask it to code" loop:
+
+- **Persistent project memory (`CLAUDE.md`).** Checked into the repo and read at the start of every session, so architecture, conventions ("business logic goes in `services.py`, not views"), and commands (`make dev`, `make generate-schema`, etc.) didn't need to be re-explained each time.
+- **A written plan before implementation (`plan/PLAN-EN.md`).** The initial project structure, Docker setup, and Django/Next.js scaffolding were specified as a step-by-step document first, then executed against — separating "what to build" from "write the code" reduced back-and-forth during scaffolding.
+- **Custom subagents with hard scope boundaries (`.claude/agents/`).**
+  - `architect` — turns a feature request into a precise spec (user stories, acceptance criteria, endpoint contracts, edge cases) *before* any code is written. It's read-only: it never edits a file or runs a command, which keeps planning decisions separate from implementation details.
+  - `backend-arquitect` / `frontend-arquitect` — implement a plan strictly inside `backend/` or `frontend/` respectively, each blocked from reading or touching the other side of the codebase (or the repo root) and from running `git commit`/`push`. That isolation is what let backend and frontend work proceed without either agent accidentally coupling the two projects.
+- **A commit-message skill (`git-commiter`).** Enforces Conventional Commits with an explicit scope, which is why the git log reads as a clean, feature-scoped history (`feat(notes): add notes app with categories and CRUD endpoints`, `refactor(backend): drop redundant comments in users and notes apps`, etc.) rather than ad-hoc messages.
+- **Iterative, reviewed commits.** Each feature (auth, notes CRUD, dashboard, note detail/autosave) was generated, reviewed, and committed on its own rather than in one large drop, making it possible to catch and fix issues — like the missing `AppConfig` and a title-migration mismatch (`1851f10`) — close to where they were introduced.
