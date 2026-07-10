@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inria_Serif, Inter } from "next/font/google";
+import { AuthProvider } from "@/features/auth/store/AuthContext";
 import "./globals.css";
 
 const inriaSerif = Inria_Serif({
@@ -29,7 +30,9 @@ export default function RootLayout({
       lang="en"
       className={`${inriaSerif.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }
