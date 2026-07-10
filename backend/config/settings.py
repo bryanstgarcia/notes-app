@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "drf_spectacular",
     "apps.users",
+    "apps.notes",
 ]
 
 MIDDLEWARE = [
