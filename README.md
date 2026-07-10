@@ -31,6 +31,8 @@ make migrate
 make dev
 ```
 
+Don't want to use Docker? See [`docs/running-without-docker.md`](docs/running-without-docker.md) for running the backend and frontend directly.
+
 ## Development URLs
 
 - Frontend: `http://localhost:3000`
